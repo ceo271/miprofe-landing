@@ -1,16 +1,15 @@
 import type { Config } from "tailwindcss";
-
 const config: Config = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        "profe-black": "#0a0a0a",
+        "profe-green": "#10b981",
+        "profe-blue": "#3b82f6",
+        "profe-copper": "#ea580c",
+        "profe-gold": "#f59e0b",
+        "profe-red": "#dc2626",
       },
     },
   },
