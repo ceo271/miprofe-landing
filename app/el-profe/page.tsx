@@ -10,14 +10,14 @@ export default function Page() {
         </div>
       </div>
       <div className="space-y-6 text-lg text-white/80">
-        <p>El Profe no es un oraculo. Es un cuate que lleva anos metido en el deporte y que te cuenta las cosas como son.</p>
+        <p>El Profe no es un oráculo. Es un cuate que lleva años metido en el deporte y que te cuenta las cosas como son.</p>
         <p>Cuando ve una ventaja, te la dice. Cuando se equivoca, lo reconoce y sigue para adelante.</p>
         <p className="font-semibold text-white">Lo que hace diferente al Profe:</p>
         <ul className="space-y-2 list-disc pl-6">
-          <li>Analisis basados en datos reales, no en corazonadas</li>
+          <li>Análisis basados en datos reales, no en corazonadas</li>
           <li>Solo recomienda cuando ve valor, no cada partido</li>
-          <li>Habla en espanol claro, sin terminos raros</li>
-          <li>Muestra su historial publico</li>
+          <li>Habla en español claro, sin términos raros</li>
+          <li>Muestra su historial público</li>
         </ul>
       </div>
     </div>

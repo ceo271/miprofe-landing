@@ -10,7 +10,7 @@ export default function Home() {
               <span className="text-xl font-bold">El Profe</span>
             </div>
             <div className="hidden md:flex items-center gap-8 text-sm">
-              <a href="/como-funciona" className="text-white/70 hover:text-white">Como funciona</a>
+              <a href="/como-funciona" className="text-white/70 hover:text-white">Cómo funciona</a>
               <a href="/el-profe" className="text-white/70 hover:text-white">Conoce al Profe</a>
             </div>
           </nav>
@@ -22,15 +22,15 @@ export default function Home() {
               </div>
               <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
                 Tu profe.<br/>
-                <span className="text-profe-green">Tu analisis.</span><br/>
+                <span className="text-profe-green">Tu análisis.</span><br/>
                 Cada partido.
               </h1>
               <p className="text-lg text-white/70 mb-8 max-w-lg">
-                El Profe te acompana en cada jornada deportiva. Analisis honestos, predicciones con ventajas reales, y un sistema de fichas virtuales para que practiques sin riesgo.
+                El Profe te acompaña en cada jornada deportiva. Análisis honestos, predicciones con ventajas reales, y un sistema de fichas virtuales para que practiques sin riesgo.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-white/5 border border-white/20 text-white/50 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">Proximamente en Google Play</button>
-                <a href="https://profe.bet" target="_blank" rel="noopener noreferrer" className="bg-profe-green hover:bg-profe-green/90 text-black px-6 py-3 rounded-lg font-semibold text-center transition">Abrir version web</a>
+                <button className="bg-white/5 border border-white/20 text-white/50 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">Próximamente en Google Play</button>
+                <a href="https://profe.bet" target="_blank" rel="noopener noreferrer" className="bg-profe-green hover:bg-profe-green/90 text-black px-6 py-3 rounded-lg font-semibold text-center transition">Abrir versión web</a>
               </div>
               <p className="text-xs text-white/40 mt-4">+18 | Solo entretenimiento | Fichas virtuales sin valor monetario</p>
             </div>
@@ -44,12 +44,12 @@ export default function Home() {
       </section>
       <section className="px-6 py-20 bg-white/5">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-4 text-center">Que hace El Profe por ti?</h2>
+          <h2 className="text-4xl font-bold mb-4 text-center">¿Qué hace El Profe por ti?</h2>
           <p className="text-white/60 text-center mb-16 max-w-2xl mx-auto">Todo el conocimiento de un veterano del deporte, disponible 24/7 en tu bolsillo.</p>
           <div className="grid md:grid-cols-3 gap-8">
-            <Feature title="Analisis diarios" body="Cada dia El Profe revisa los partidos y te dice donde ve valor. Sin rodeos, en espanol claro." />
-            <Feature title="Fichas virtuales" body="Practica sin arriesgar un peso. Empieza con 1,000 fichas al registrarte y sube en la clasificacion." />
-            <Feature title="Habla con El Profe" body="Preguntale lo que quieras. Tiene datos que otros no tienen y te los explica como a un cuate." />
+            <Feature title="Análisis diarios" body="Cada día El Profe revisa los partidos y te dice dónde ve valor. Sin rodeos, en español claro." />
+            <Feature title="Fichas virtuales" body="Practica sin arriesgar un peso. Empieza con 1,000 fichas al registrarte y sube en la clasificación." />
+            <Feature title="Habla con El Profe" body="Pregúntale lo que quieras. Tiene datos que otros no tienen y te los explica como a un cuate." />
           </div>
         </div>
       </section>
@@ -57,7 +57,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Honesto contigo.</h2>
           <p className="text-lg text-white/70 mb-4">El Profe no te promete ganar siempre. A veces se equivoca, y cuando pasa, lo reconoce.</p>
-          <p className="text-lg text-white/70">Porque esa es la unica manera de darle valor real a lo que si pega.</p>
+          <p className="text-lg text-white/70">Porque esa es la única manera de darle valor real a lo que sí pega.</p>
         </div>
       </section>
     </div>
