@@ -27,6 +27,7 @@ export default function PerfilPage() {
       </div>
 
       <StreakCalendar />
+      <InviteCard />
       <Achievements />
       <Leaderboards />
       <ProfeRecord />
@@ -122,6 +123,64 @@ function StreakCalendar() {
         >
           {claimed ? "✓ Reclamado hoy" : "Reclamar recompensa de hoy (+150)"}
         </button>
+      </div>
+    </div>
+  )
+}
+
+function InviteCard() {
+  const { addChips, pushToast } = useDemo()
+  const [copied, setCopied] = useState(false)
+  const [invited, setInvited] = useState(2) // cuates que ya entraron
+  const code = "PROFE-XIAO23"
+  const goal = 3
+  return (
+    <div className="px-4 mt-5">
+      <h2 className="text-sm font-bold mb-2">Trae a tus cuates</h2>
+      <div className="rounded-2xl bg-gradient-to-br from-profe-green/15 to-profe-blue/5 border border-profe-green/25 p-4">
+        <p className="text-xs text-white/70 mb-3">
+          Invita a un cuate: <b className="text-profe-green">los dos reciben 500 fichas</b>. Y cuando empiece a poner predicciones, te caen <b className="text-profe-gold">200 más</b>.
+        </p>
+
+        {/* Código de referido */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex-1 bg-profe-black/60 border border-white/10 rounded-xl px-3 py-2.5 font-mono text-sm tracking-wide">
+            {code}
+          </div>
+          <button
+            onClick={() => {
+              setCopied(true)
+              pushToast("Código copiado")
+              setTimeout(() => setCopied(false), 1800)
+            }}
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold ${copied ? "bg-white/10 text-white/60" : "bg-white/5 text-white/80 border border-white/15"}`}
+          >
+            {copied ? "✓" : "Copiar"}
+          </button>
+        </div>
+
+        {/* Progreso hacia hito */}
+        <div className="mb-3">
+          <div className="flex justify-between text-[10px] text-white/50 mb-1">
+            <span>{invited} de {goal} cuates ya entraron</span>
+            <span className="text-profe-gold">Hito: +2,000 fichas</span>
+          </div>
+          <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-full bg-profe-green rounded-full transition-all" style={{ width: `${(invited / goal) * 100}%` }} />
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            addChips(100, "+100 fichas por invitar 🎉")
+            pushToast("¡Invitación enviada! Avísale a tu cuate.")
+            setInvited((n) => Math.min(goal, n + 1))
+          }}
+          className="w-full py-2.5 rounded-xl bg-profe-green text-black text-sm font-bold"
+        >
+          Compartir invitación
+        </button>
+        <p className="text-[10px] text-white/35 mt-2 text-center">Fichas virtuales sin valor monetario · no canjeables · +18</p>
       </div>
     </div>
   )
