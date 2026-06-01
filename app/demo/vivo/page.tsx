@@ -4,13 +4,101 @@ import { useEffect, useRef, useState } from "react"
 import { LIVE_COMMENTARY, MICRO_BETS, LIVE_CHAT_SEED, LIVE_CHAT_BOTS } from "../data"
 import { useDemo } from "../DemoContext"
 
+type GoalInfo = { team: string; flag: string; scorer: string; scoreStr: string; minute: number }
+
+// Goles guionizados para dar vida al salón (y al bucle "quédate a ver qué pasa").
+const GOAL_SCRIPT: { at: number; score: [number, number]; info: GoalInfo }[] = [
+  { at: 9000, score: [2, 1], info: { team: "Brasil", flag: "🇧🇷", scorer: "Rodrygo", scoreStr: "2-1", minute: 67 } },
+  { at: 24000, score: [2, 2], info: { team: "España", flag: "🇪🇸", scorer: "Yamal", scoreStr: "2-2", minute: 74 } },
+]
+
 export default function VivoPage() {
+  const [score, setScore] = useState<[number, number]>([1, 1])
+  const [goalSignal, setGoalSignal] = useState(0)
+  const [banner, setBanner] = useState<GoalInfo | null>(null)
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = []
+    GOAL_SCRIPT.forEach((g) => {
+      timers.push(
+        setTimeout(() => {
+          setScore(g.score)
+          setBanner(g.info)
+          setGoalSignal((s) => s + 1)
+          timers.push(setTimeout(() => setBanner(null), 3400))
+        }, g.at)
+      )
+    })
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
   return (
-    <div className="flex flex-col h-full">
-      <LiveHeader />
+    <div className="flex flex-col h-full relative">
+      <LiveHeader score={score} />
       <LiveMiniBoard />
       <MicroBetTicker />
-      <CommentaryAndChat />
+      <CommentaryAndChat goalSignal={goalSignal} banner={banner} />
+      {banner && <GoalBanner info={banner} />}
+    </div>
+  )
+}
+
+function GoalBanner({ info }: { info: GoalInfo }) {
+  return (
+    <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 bg-black/50" />
+      {/* lluvia de emojis */}
+      {["⚽", "🎉", "🔥", "⚽", "🎊", "🟢", "⚽", "🎉"].map((e, i) => (
+        <span
+          key={i}
+          className="anim-float absolute text-3xl"
+          style={{ left: `${8 + i * 11}%`, top: "62%", animationDelay: `${i * 0.07}s` }}
+        >
+          {e}
+        </span>
+      ))}
+      <div className="anim-chip relative text-center bg-gradient-to-br from-profe-green to-profe-green/70 text-black rounded-3xl px-10 py-6 shadow-2xl">
+        <div className="text-5xl font-black tracking-tight">¡GOOOL!</div>
+        <div className="text-2xl mt-1">{info.flag} {info.team}</div>
+        <div className="text-sm font-semibold mt-1 opacity-80">
+          {info.scorer} · {info.minute}&apos; · {info.scoreStr}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LiveHeader({ score }: { score: [number, number] }) {
+  const [minute, setMinute] = useState(63)
+  useEffect(() => {
+    const t = setInterval(() => setMinute((m) => (m < 90 ? m + 1 : m)), 8000)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="bg-gradient-to-b from-profe-blue/15 to-transparent px-4 py-3 border-b border-white/10">
+      <div className="flex items-center justify-between text-[10px] mb-2">
+        <span className="text-white/40">Mundial 2026 · Grupo A</span>
+        <span className="flex items-center gap-1 text-profe-red font-bold">
+          <span className="w-1.5 h-1.5 rounded-full bg-profe-red anim-live" /> EN VIVO {minute}&apos;
+        </span>
+      </div>
+      <div className="flex items-center justify-around">
+        <div className="text-center">
+          <div className="text-3xl">🇧🇷</div>
+          <div className="text-xs font-semibold">Brasil</div>
+        </div>
+        <div key={score.join("-")} className="anim-chip text-2xl font-black tabular-nums">
+          {score[0]} - {score[1]}
+        </div>
+        <div className="text-center">
+          <div className="text-3xl">🇪🇸</div>
+          <div className="text-xs font-semibold">España</div>
+        </div>
+      </div>
+      <div className="mt-2 flex items-center justify-center gap-1.5 text-[10px] text-profe-copper">
+        <img src="/profe-icon.png" alt="" className="w-3.5 h-3.5 rounded-full" />
+        Pick del Profe: <b>Más de 2.5 goles</b> · 81%
+      </div>
     </div>
   )
 }
@@ -49,39 +137,6 @@ function LiveMiniBoard() {
           <span className="text-[10px] font-bold tabular-nums text-white/50">{r.pts.toLocaleString()}</span>
         </div>
       ))}
-    </div>
-  )
-}
-
-function LiveHeader() {
-  const [minute, setMinute] = useState(63)
-  useEffect(() => {
-    const t = setInterval(() => setMinute((m) => (m < 90 ? m + 1 : m)), 8000)
-    return () => clearInterval(t)
-  }, [])
-  return (
-    <div className="bg-gradient-to-b from-profe-blue/15 to-transparent px-4 py-3 border-b border-white/10">
-      <div className="flex items-center justify-between text-[10px] mb-2">
-        <span className="text-white/40">Mundial 2026 · Grupo A</span>
-        <span className="flex items-center gap-1 text-profe-red font-bold">
-          <span className="w-1.5 h-1.5 rounded-full bg-profe-red anim-live" /> EN VIVO {minute}&apos;
-        </span>
-      </div>
-      <div className="flex items-center justify-around">
-        <div className="text-center">
-          <div className="text-3xl">🇧🇷</div>
-          <div className="text-xs font-semibold">Brasil</div>
-        </div>
-        <div className="text-2xl font-black tabular-nums">1 - 1</div>
-        <div className="text-center">
-          <div className="text-3xl">🇪🇸</div>
-          <div className="text-xs font-semibold">España</div>
-        </div>
-      </div>
-      <div className="mt-2 flex items-center justify-center gap-1.5 text-[10px] text-profe-copper">
-        <img src="/profe-icon.png" alt="" className="w-3.5 h-3.5 rounded-full" />
-        Pick del Profe: <b>Más de 2.5 goles</b> · 81%
-      </div>
     </div>
   )
 }
@@ -154,7 +209,7 @@ function MicroBetTicker() {
 
 type ChatMsg = { user: string; text: string; color: string; me?: boolean }
 
-function CommentaryAndChat() {
+function CommentaryAndChat({ goalSignal, banner }: { goalSignal: number; banner: GoalInfo | null }) {
   const [msgs, setMsgs] = useState<ChatMsg[]>(LIVE_CHAT_SEED)
   const [commentary, setCommentary] = useState([LIVE_COMMENTARY[0]])
   const [input, setInput] = useState("")
@@ -183,6 +238,26 @@ function CommentaryAndChat() {
     }, 6000)
     return () => clearInterval(t)
   }, [])
+
+  // El salón estalla cuando hay gol
+  useEffect(() => {
+    if (goalSignal === 0 || !banner) return
+    setCommentary((c) => [
+      ...c,
+      { min: banner.minute, text: `¡GOOOL de ${banner.team}! ${banner.scorer} la clavó. Se los dije: ¡puro gol hoy! 🔥`, tone: "hype" },
+    ])
+    const burst: ChatMsg[] = [
+      { user: "Regio_23", text: "AAAAAH GOOOL 🤩🤩", color: "text-profe-gold" },
+      { user: "Memo_GDL", text: "se los dije!! el Profe nunca falla", color: "text-profe-green" },
+      { user: "Paty99", text: `${banner.flag}${banner.flag}${banner.flag}`, color: "text-profe-copper" },
+    ]
+    burst.forEach((b, i) => setTimeout(() => setMsgs((m) => [...m.slice(-30), b]), i * 350))
+    // lluvia de reacciones automática
+    Array.from({ length: 6 }).forEach((_, i) =>
+      setTimeout(() => react(i % 2 ? "⚽" : "🔥"), i * 150)
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalSignal])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
