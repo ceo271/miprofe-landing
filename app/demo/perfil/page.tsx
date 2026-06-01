@@ -3,6 +3,63 @@
 import { useState } from "react"
 import { LEADERBOARDS, PROFE_RECORD, STREAK_DAYS } from "../data"
 import { useDemo } from "../DemoContext"
+import { EVENT_LABEL } from "../analytics"
+
+function Activacion() {
+  const { bets, onboarded, leagues, streak, shared, events } = useDemo()
+  const checks = [
+    { label: "Puso su primera ficha", done: bets.length >= 1, star: true },
+    { label: "Eligió su selección", done: onboarded },
+    { label: "Sigue 2+ ligas", done: leagues >= 2 },
+    { label: "5 apuestas en la semana", done: bets.length >= 5, progress: `${Math.min(bets.length, 5)}/5` },
+    { label: "Volvió 3 días seguidos", done: streak >= 3 },
+    { label: "Compartió o invitó", done: shared },
+  ]
+  const done = checks.filter((c) => c.done).length
+  const pct = Math.round((done / checks.length) * 100)
+  return (
+    <div className="px-4 mt-5">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-sm font-bold">Tu activación</h2>
+        <span className="text-xs text-white/40">
+          {done}/{checks.length} · {pct}%
+        </span>
+      </div>
+      <div className="rounded-2xl bg-white/[0.03] border border-white/10 p-4">
+        <div className="h-2 rounded-full bg-white/10 overflow-hidden mb-3">
+          <div className="h-full bg-profe-green rounded-full transition-all" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="space-y-2">
+          {checks.map((c) => (
+            <div key={c.label} className="flex items-center gap-2 text-xs">
+              <span className={c.done ? "text-profe-green" : "text-white/30"}>{c.done ? "✓" : "○"}</span>
+              <span className={`flex-1 ${c.done ? "text-white/80" : "text-white/45"}`}>
+                {c.label}
+                {c.star && " ⭐"}
+              </span>
+              {c.progress && <span className="text-[10px] text-white/40 tabular-nums">{c.progress}</span>}
+            </div>
+          ))}
+        </div>
+        {events.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-white/5">
+            <div className="text-[10px] text-white/35 mb-1.5 uppercase tracking-wide">Eventos (→ analítica)</div>
+            <div className="space-y-1 max-h-24 overflow-y-auto no-scrollbar">
+              {[...events].reverse().slice(0, 6).map((e, i) => (
+                <div key={i} className="text-[10px] text-white/55 font-mono anim-msg">
+                  · {EVENT_LABEL[e.name]}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <p className="text-[10px] text-white/35 mt-3 leading-relaxed">
+          Define UNA acción aha (poner la primera ficha) y mide los números mágicos. En producción estos eventos van a PostHog.
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export default function PerfilPage() {
   const { chips, streak, bets, copied } = useDemo()
@@ -26,6 +83,7 @@ export default function PerfilPage() {
         </div>
       </div>
 
+      <Activacion />
       <StreakCalendar />
       <InviteCard />
       <Achievements />
@@ -83,7 +141,7 @@ function Stat({ n, label, accent }: { n: string; label: string; accent: string }
 }
 
 function StreakCalendar() {
-  const { addChips, pushToast } = useDemo()
+  const { addChips, pushToast, track } = useDemo()
   const [claimed, setClaimed] = useState(false)
   return (
     <div className="px-4 mt-5">
@@ -116,6 +174,7 @@ function StreakCalendar() {
             setClaimed(true)
             addChips(150, "Recompensa diaria: +150")
             pushToast("¡Día 6 reclamado! Vuelve mañana por el bono grande.")
+            track("streak_claimed", { day: 6 })
           }}
           className={`w-full py-2.5 rounded-xl text-sm font-bold ${
             claimed ? "bg-white/5 text-white/40" : "bg-profe-gold text-black"
@@ -129,7 +188,7 @@ function StreakCalendar() {
 }
 
 function InviteCard() {
-  const { addChips, pushToast } = useDemo()
+  const { addChips, pushToast, track, markShared } = useDemo()
   const [copied, setCopied] = useState(false)
   const [invited, setInvited] = useState(2) // cuates que ya entraron
   const code = "PROFE-XIAO23"
@@ -174,6 +233,8 @@ function InviteCard() {
           onClick={() => {
             addChips(100, "+100 fichas por invitar 🎉")
             pushToast("¡Invitación enviada! Avísale a tu cuate.")
+            markShared()
+            track("invite_shared", {})
             setInvited((n) => Math.min(goal, n + 1))
           }}
           className="w-full py-2.5 rounded-xl bg-profe-green text-black text-sm font-bold"

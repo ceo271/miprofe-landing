@@ -157,14 +157,14 @@ function OnboardingSheet() {
             <p className="text-sm text-white/60 mb-4">No te preocupes, lo puedes cambiar cuando quieras.</p>
             <div className="space-y-2 mb-6">
               <button
-                onClick={() => completeOnboarding(team!)}
+                onClick={() => completeOnboarding(team!, leagues.length)}
                 className="w-full text-left px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-profe-green/40"
               >
                 <div className="font-bold text-sm">🤝 Con El Profe</div>
                 <div className="text-xs text-white/55">Sigo sus picks y aprendo de su lectura.</div>
               </button>
               <button
-                onClick={() => completeOnboarding(team!)}
+                onClick={() => completeOnboarding(team!, leagues.length)}
                 className="w-full text-left px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-profe-copper/40"
               >
                 <div className="font-bold text-sm">😎 A mi manera</div>
@@ -242,7 +242,7 @@ function ConfidenceBar({ value }: { value: number }) {
 }
 
 function MatchCard({ match }: { match: Match }) {
-  const { placeBet, addChips, pushToast } = useDemo()
+  const { placeBet, addChips, pushToast, track, markShared } = useDemo()
   const [showFactors, setShowFactors] = useState(false)
   const [side, setSide] = useState<"profe" | "contra" | null>(null)
   const [placed, setPlaced] = useState<{ stake: number; side: "profe" | "contra" } | null>(null)
@@ -265,6 +265,7 @@ function MatchCard({ match }: { match: Match }) {
     const won = placed.side === "profe" ? profeHits : !profeHits
     const payout = won ? Math.round(placed.stake * 1.85) : 0
     setSettled({ won, payout })
+    track("bet_settled", { matchId: match.id, won, payout })
     if (won) addChips(payout, placed.side === "contra" ? "¡Le ganaste al Profe!" : "¡El Profe la pegó!")
   }
 
@@ -384,6 +385,8 @@ function MatchCard({ match }: { match: Match }) {
           onShared={() => {
             addChips(50, "+50 fichas por compartir 🎉")
             pushToast("¡Tarjeta compartida! Tus cuates ya la vieron.")
+            markShared()
+            track("result_shared", { matchId: match.id })
             setShare(false)
           }}
         />
