@@ -14,6 +14,7 @@ export default function HoyPage() {
         <h1 className="text-2xl font-black mb-1">Tu jornada de hoy</h1>
         <p className="text-sm text-white/50 mb-4">El Profe ya revisó los partidos. Tú decides.</p>
       </div>
+      <JornadaTimeline />
       <div className="space-y-4 px-4">
         {MATCHES.map((m) => (
           <MatchCard key={m.id} match={m} />
@@ -22,6 +23,56 @@ export default function HoyPage() {
       <p className="text-center text-[10px] text-white/30 mt-8 px-6">
         Ejemplos ilustrativos. Fichas virtuales sin valor monetario. Ningún pronóstico garantiza un resultado. +18 · Juega responsablemente.
       </p>
+    </div>
+  )
+}
+
+function JornadaTimeline() {
+  const points = [
+    { time: "08:00", label: "Briefing", icon: "☀️", state: "done" as const },
+    { time: "13:00", label: "Alineaciones", icon: "📋", state: "done" as const },
+    { time: "Ahora", label: "Brasil-España", icon: "🔴", state: "live" as const },
+    { time: "21:00", label: "México-Arg", icon: "⚽", state: "next" as const },
+    { time: "23:30", label: "Resumen", icon: "🌙", state: "upcoming" as const },
+  ]
+  return (
+    <div className="px-4 mb-5">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-bold text-white/70">El Profe te acompaña todo el día</span>
+        <span className="text-[10px] text-white/35">5 momentos</span>
+      </div>
+      <div className="flex gap-1 overflow-x-auto no-scrollbar pb-1">
+        {points.map((p, i) => {
+          const content = (
+            <div className="flex flex-col items-center gap-1 flex-shrink-0 w-[68px]">
+              <div className="flex items-center w-full">
+                <div className={`h-0.5 flex-1 ${i === 0 ? "opacity-0" : p.state === "upcoming" ? "bg-white/10" : "bg-profe-green/50"}`} />
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
+                    p.state === "live"
+                      ? "bg-profe-red/20 border-2 border-profe-red anim-live"
+                      : p.state === "done"
+                      ? "bg-profe-green/20 border border-profe-green/40"
+                      : p.state === "next"
+                      ? "bg-profe-gold/15 border border-profe-gold/40"
+                      : "bg-white/5 border border-white/10"
+                  }`}
+                >
+                  {p.icon}
+                </div>
+                <div className={`h-0.5 flex-1 ${i === points.length - 1 ? "opacity-0" : p.state === "done" ? "bg-profe-green/50" : "bg-white/10"}`} />
+              </div>
+              <span className={`text-[9px] font-semibold ${p.state === "live" ? "text-profe-red" : "text-white/55"}`}>{p.time}</span>
+              <span className="text-[8px] text-white/40 text-center leading-tight">{p.label}</span>
+            </div>
+          )
+          return p.state === "live" ? (
+            <Link key={i} href="/demo/vivo">{content}</Link>
+          ) : (
+            <div key={i}>{content}</div>
+          )
+        })}
+      </div>
     </div>
   )
 }
