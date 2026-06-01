@@ -6,8 +6,10 @@ import { MATCHES, STREAK_DAYS, type Match } from "./data"
 import { useDemo } from "./DemoContext"
 
 export default function HoyPage() {
+  const { onboarded } = useDemo()
   return (
     <div className="pb-8">
+      {!onboarded && <OnboardingSheet />}
       <ColdStartBanner />
       <StreakMini />
       <div className="px-4 pt-1">
@@ -77,6 +79,107 @@ function JornadaTimeline() {
   )
 }
 
+function OnboardingSheet() {
+  const { completeOnboarding } = useDemo()
+  const [step, setStep] = useState(0)
+  const [team, setTeam] = useState<string | null>(null)
+  const [leagues, setLeagues] = useState<string[]>([])
+  const teams = ["🇲🇽 México", "🇦🇷 Argentina", "🇧🇷 Brasil", "🇪🇸 España", "🇫🇷 Francia", "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra"]
+  const ligas = ["Mundial 2026", "Liga MX", "Premier League", "LaLiga", "Champions"]
+
+  function toggleLeague(l: string) {
+    setLeagues((s) => (s.includes(l) ? s.filter((x) => x !== l) : [...s, l]))
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70">
+      <div className="w-full max-w-[420px] bg-profe-black border-t border-white/15 rounded-t-3xl p-6 anim-slide">
+        {/* progreso */}
+        <div className="flex gap-1.5 mb-5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-profe-green" : "bg-white/10"}`} />
+          ))}
+        </div>
+
+        {step === 0 && (
+          <>
+            <h2 className="text-xl font-black mb-1">¡Bienvenido al equipo! 🎓</h2>
+            <p className="text-sm text-white/60 mb-4">Dime tu selección y El Profe arma tu jornada a tu medida.</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {teams.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTeam(t)}
+                  className={`text-sm px-3 py-2 rounded-xl border ${
+                    team === t ? "bg-profe-green/15 border-profe-green/50 text-profe-green" : "bg-white/5 border-white/10 text-white/75"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+            <button
+              disabled={!team}
+              onClick={() => setStep(1)}
+              className={`w-full py-3 rounded-xl text-sm font-bold ${team ? "bg-profe-green text-black" : "bg-white/5 text-white/30"}`}
+            >
+              Siguiente
+            </button>
+          </>
+        )}
+
+        {step === 1 && (
+          <>
+            <h2 className="text-xl font-black mb-1">¿Qué ligas sigues?</h2>
+            <p className="text-sm text-white/60 mb-4">Para mandarte solo los partidos que te importan.</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {ligas.map((l) => (
+                <button
+                  key={l}
+                  onClick={() => toggleLeague(l)}
+                  className={`text-sm px-3 py-2 rounded-xl border ${
+                    leagues.includes(l) ? "bg-profe-blue/15 border-profe-blue/50 text-profe-blue" : "bg-white/5 border-white/10 text-white/75"
+                  }`}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setStep(2)} className="w-full py-3 rounded-xl text-sm font-bold bg-profe-green text-black">
+              Siguiente
+            </button>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h2 className="text-xl font-black mb-1">¿Cómo le entras?</h2>
+            <p className="text-sm text-white/60 mb-4">No te preocupes, lo puedes cambiar cuando quieras.</p>
+            <div className="space-y-2 mb-6">
+              <button
+                onClick={() => completeOnboarding(team!)}
+                className="w-full text-left px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-profe-green/40"
+              >
+                <div className="font-bold text-sm">🤝 Con El Profe</div>
+                <div className="text-xs text-white/55">Sigo sus picks y aprendo de su lectura.</div>
+              </button>
+              <button
+                onClick={() => completeOnboarding(team!)}
+                className="w-full text-left px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-profe-copper/40"
+              >
+                <div className="font-bold text-sm">😎 A mi manera</div>
+                <div className="text-xs text-white/55">Me gusta llevarle la contraria y demostrarle.</div>
+              </button>
+            </div>
+            <p className="text-center text-xs text-profe-green font-semibold">Termina y recibe +500 fichas para empezar 🪙</p>
+          </>
+        )}
+        <p className="text-center text-[10px] text-white/30 mt-4">Fichas virtuales sin valor monetario · +18</p>
+      </div>
+    </div>
+  )
+}
+
 function ColdStartBanner() {
   const { addChips } = useDemo()
   const [claimed, setClaimed] = useState(false)
@@ -91,13 +194,13 @@ function ColdStartBanner() {
         onClick={() => {
           if (claimed) return
           setClaimed(true)
-          addChips(500, "¡+500 fichas de bienvenida!")
+          addChips(300, "¡+300 fichas del bono de hoy!")
         }}
         className={`w-full py-2.5 rounded-xl text-sm font-bold transition ${
           claimed ? "bg-white/5 text-white/40" : "bg-profe-green text-black"
         }`}
       >
-        {claimed ? "✓ Bono reclamado" : "Reclama +500 fichas para empezar"}
+        {claimed ? "✓ Bono de hoy reclamado" : "Reclama el bono de hoy (+300)"}
       </button>
     </div>
   )

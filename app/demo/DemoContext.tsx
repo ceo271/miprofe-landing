@@ -19,11 +19,14 @@ type DemoState = {
   copied: string[]
   followed: string[]
   toasts: Toast[]
+  onboarded: boolean
+  team: string
   placeBet: (bet: Omit<Bet, "status">) => void
   addChips: (n: number, label?: string) => void
   toggleCopy: (id: string) => void
   toggleFollow: (id: string) => void
   pushToast: (text: string, kind?: "chip" | "info") => void
+  completeOnboarding: (team: string) => void
 }
 
 const Ctx = createContext<DemoState | null>(null)
@@ -35,6 +38,8 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const [copied, setCopied] = useState<string[]>([])
   const [followed, setFollowed] = useState<string[]>([])
   const [toasts, setToasts] = useState<Toast[]>([])
+  const [onboarded, setOnboarded] = useState(false)
+  const [team, setTeam] = useState("🇲🇽 México")
 
   const pushToast = useCallback((text: string, kind: "chip" | "info" = "info") => {
     const id = Date.now() + Math.random()
@@ -70,9 +75,18 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setFollowed((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]))
   }, [])
 
+  const completeOnboarding = useCallback(
+    (t: string) => {
+      setTeam(t)
+      setOnboarded(true)
+      addChips(500, "¡+500 fichas de bienvenida!")
+    },
+    [addChips]
+  )
+
   return (
     <Ctx.Provider
-      value={{ chips, streak, bets, copied, followed, toasts, placeBet, addChips, toggleCopy, toggleFollow, pushToast }}
+      value={{ chips, streak, bets, copied, followed, toasts, onboarded, team, placeBet, addChips, toggleCopy, toggleFollow, pushToast, completeOnboarding }}
     >
       {children}
     </Ctx.Provider>
