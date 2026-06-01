@@ -116,10 +116,11 @@ export default function ProfePage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && ask(input)}
+          aria-label="Escribe un mensaje a El Profe"
           placeholder="Pregúntale lo que quieras al Profe…"
           className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2.5 text-xs outline-none focus:border-profe-copper/40"
         />
-        <button onClick={() => ask(input)} className="text-profe-copper font-bold text-sm px-2">
+        <button onClick={() => ask(input)} aria-label="Enviar mensaje" className="text-profe-copper font-bold text-sm px-2">
           ➤
         </button>
       </div>
