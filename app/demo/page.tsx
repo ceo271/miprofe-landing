@@ -265,7 +265,7 @@ function MatchCard({ match }: { match: Match }) {
     const won = placed.side === "profe" ? profeHits : !profeHits
     const payout = won ? Math.round(placed.stake * 1.85) : 0
     setSettled({ won, payout })
-    track("bet_settled", { matchId: match.id, won, payout })
+    track("match_settled", { matchId: match.id, won, payout })
     if (won) addChips(payout, placed.side === "contra" ? "¡Le ganaste al Profe!" : "¡El Profe la pegó!")
   }
 

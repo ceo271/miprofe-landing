@@ -6,7 +6,7 @@ export type AnalyticsEvent =
   | "onboarding_completed"
   | "aha_first_bet" // ⭐ North Star de activación (poner la primera ficha)
   | "bet_placed"
-  | "bet_settled"
+  | "match_settled"
   | "live_microbet_placed"
   | "result_shared"
   | "invite_shared"
@@ -17,7 +17,7 @@ export const EVENT_LABEL: Record<AnalyticsEvent, string> = {
   onboarding_completed: "Onboarding completado",
   aha_first_bet: "⭐ Primera ficha (aha)",
   bet_placed: "Apuesta puesta",
-  bet_settled: "Apuesta liquidada",
+  match_settled: "Apuesta liquidada",
   live_microbet_placed: "Apuesta-relámpago en vivo",
   result_shared: "Resultado compartido",
   invite_shared: "Invitación enviada",
