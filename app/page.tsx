@@ -13,6 +13,7 @@ export default function Home() {
               <a href="/como-funciona" className="text-white/70 hover:text-white">Cómo funciona</a>
               <a href="#reto" className="text-white/70 hover:text-white">El reto</a>
               <a href="/el-profe" className="text-white/70 hover:text-white">Conoce al Profe</a>
+              <a href="/demo" className="text-profe-green hover:text-profe-green/80 font-semibold">Probar demo</a>
             </div>
           </nav>
           <div className="grid md:grid-cols-2 gap-16 items-center">
@@ -161,6 +162,38 @@ export default function Home() {
               </div>
             </div>
             <p className="text-xs text-white/40 mt-8">Las fichas son virtuales, sin valor monetario y no canjeables por dinero. +18.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo interactivo */}
+      <section className="px-6 py-20 bg-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-profe-green/10 border border-profe-green/30 text-profe-green text-xs font-semibold mb-6">
+            <span className="w-2 h-2 rounded-full bg-profe-green animate-pulse" />
+            Demo en vivo · sin registro
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black mb-5">Pruébalo ahora mismo</h2>
+          <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
+            Entra al demo interactivo: pon fichas con o contra El Profe, métete al salón en vivo de un partido, rétalo en el chat y sube en las clasificaciones. Todo en tu navegador.
+          </p>
+          <a href="/demo" className="inline-block bg-profe-green hover:bg-profe-green/90 text-black px-8 py-4 rounded-lg font-bold text-lg transition">
+            Abrir el demo →
+          </a>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-10 text-left">
+            {[
+              ["🏠", "Hoy", "Picks del día"],
+              ["🔴", "En Vivo", "Salón + apuestas relámpago"],
+              ["🎓", "El Profe", "Chat con memoria"],
+              ["👥", "Comunidad", "Picks de la banda"],
+              ["🏆", "Perfil", "Rachas y rankings"],
+            ].map(([icon, title, sub]) => (
+              <div key={title} className="bg-profe-black/50 border border-white/10 rounded-xl p-4">
+                <div className="text-2xl mb-1">{icon}</div>
+                <div className="text-sm font-bold">{title}</div>
+                <div className="text-xs text-white/50">{sub}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
