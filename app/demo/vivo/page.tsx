@@ -8,8 +8,47 @@ export default function VivoPage() {
   return (
     <div className="flex flex-col h-full">
       <LiveHeader />
+      <LiveMiniBoard />
       <MicroBetTicker />
       <CommentaryAndChat />
+    </div>
+  )
+}
+
+function LiveMiniBoard() {
+  const [board, setBoard] = useState([
+    { user: "Regio_23", pts: 1240, avatar: "🦅" },
+    { user: "Tú", pts: 980, avatar: "😎", you: true },
+    { user: "LaDoña", pts: 760, avatar: "👑" },
+    { user: "Memo_GDL", pts: 540, avatar: "⚽" },
+  ])
+  // Las posiciones se mueven en vivo según las apuestas-relámpago.
+  useEffect(() => {
+    const t = setInterval(() => {
+      setBoard((b) =>
+        [...b]
+          .map((x) => ({ ...x, pts: x.pts + Math.floor(Math.random() * 120) }))
+          .sort((a, z) => z.pts - a.pts)
+      )
+    }, 4000)
+    return () => clearInterval(t)
+  }, [])
+  return (
+    <div className="px-3 py-2 border-b border-white/5 flex items-center gap-2 overflow-x-auto no-scrollbar bg-white/[0.02]">
+      <span className="text-[9px] text-white/40 font-semibold flex-shrink-0 uppercase">En vivo</span>
+      {board.map((r, i) => (
+        <div
+          key={r.user}
+          className={`flex items-center gap-1.5 flex-shrink-0 rounded-full px-2.5 py-1 transition-all ${
+            r.you ? "bg-profe-green/15 border border-profe-green/30" : "bg-white/5"
+          }`}
+        >
+          <span className={`text-[10px] font-black ${i === 0 ? "text-profe-gold" : "text-white/40"}`}>{i + 1}</span>
+          <span className="text-sm leading-none">{r.avatar}</span>
+          <span className={`text-[11px] ${r.you ? "font-bold text-profe-green" : "text-white/70"}`}>{r.user}</span>
+          <span className="text-[10px] font-bold tabular-nums text-white/50">{r.pts.toLocaleString()}</span>
+        </div>
+      ))}
     </div>
   )
 }
