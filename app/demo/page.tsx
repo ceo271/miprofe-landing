@@ -242,11 +242,12 @@ function ConfidenceBar({ value }: { value: number }) {
 }
 
 function MatchCard({ match }: { match: Match }) {
-  const { placeBet, addChips } = useDemo()
+  const { placeBet, addChips, pushToast } = useDemo()
   const [showFactors, setShowFactors] = useState(false)
   const [side, setSide] = useState<"profe" | "contra" | null>(null)
   const [placed, setPlaced] = useState<{ stake: number; side: "profe" | "contra" } | null>(null)
   const [settled, setSettled] = useState<null | { won: boolean; payout: number }>(null)
+  const [share, setShare] = useState(false)
 
   const live = match.status === "live"
 
@@ -331,7 +332,15 @@ function MatchCard({ match }: { match: Match }) {
       {/* Acción */}
       <div className="border-t border-white/5 p-4">
         {settled ? (
-          <SettledView settled={settled} side={placed!.side} />
+          <>
+            <SettledView settled={settled} side={placed!.side} />
+            <button
+              onClick={() => setShare(true)}
+              className="w-full mt-3 py-2.5 rounded-xl bg-white/10 border border-white/20 text-sm font-bold hover:bg-white/15"
+            >
+              📸 Compartir mi resultado
+            </button>
+          </>
         ) : placed ? (
           <div className="text-center">
             <p className="text-sm text-white/70 mb-3">
@@ -363,6 +372,78 @@ function MatchCard({ match }: { match: Match }) {
             </button>
           </div>
         )}
+      </div>
+
+      {share && settled && placed && (
+        <ShareCard
+          match={match}
+          won={settled.won}
+          side={placed.side}
+          payout={settled.payout}
+          onClose={() => setShare(false)}
+          onShared={() => {
+            addChips(50, "+50 fichas por compartir 🎉")
+            pushToast("¡Tarjeta compartida! Tus cuates ya la vieron.")
+            setShare(false)
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function ShareCard({
+  match,
+  won,
+  side,
+  payout,
+  onClose,
+  onShared,
+}: {
+  match: Match
+  won: boolean
+  side: "profe" | "contra"
+  payout: number
+  onClose: () => void
+  onShared: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-5" onClick={onClose}>
+      <div className="w-full max-w-[320px] anim-chip" onClick={(e) => e.stopPropagation()}>
+        {/* La tarjeta compartible */}
+        <div className="rounded-3xl overflow-hidden border border-white/15 bg-gradient-to-br from-profe-green/25 via-profe-black to-profe-black">
+          <div className="p-5 text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <img src="/profe-icon.png" alt="" className="w-7 h-7 rounded-full" />
+              <span className="font-black tracking-tight">EL PROFE</span>
+            </div>
+            <div className="text-[10px] text-white/40 mb-3">MUNDIAL 2026 · {match.stage}</div>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-3xl">{match.home.flag}</span>
+              <span className="text-white/30 text-sm font-bold">VS</span>
+              <span className="text-3xl">{match.away.flag}</span>
+            </div>
+            <div className={`text-3xl font-black mb-1 ${won ? "text-profe-green" : "text-white/70"}`}>
+              {won ? (side === "contra" ? "¡LE GANÉ AL PROFE!" : "¡LA PEGUÉ!") : "CASI LA PEGO"}
+            </div>
+            <div className="text-xs text-white/55 mb-4">
+              Aposté <b className="text-white">{side === "profe" ? "con" : "contra"}</b> El Profe en {match.profePick}
+            </div>
+            {won && <div className="inline-block bg-profe-gold/20 text-profe-gold text-sm font-bold px-4 py-1.5 rounded-full mb-4">+{payout} fichas 🪙</div>}
+            <div className="border-t border-white/10 pt-3 text-[10px] text-white/40">
+              ¿Eres mejor que El Profe? · profe.bet · +18
+            </div>
+          </div>
+        </div>
+        {/* Acciones */}
+        <div className="flex gap-2 mt-4">
+          <button onClick={onClose} className="px-4 py-3 rounded-xl bg-white/5 text-sm font-semibold text-white/60">
+            Cerrar
+          </button>
+          <button onClick={onShared} className="flex-1 py-3 rounded-xl bg-profe-green text-black text-sm font-bold">
+            Compartir y ganar +50 🪙
+          </button>
+        </div>
       </div>
     </div>
   )
