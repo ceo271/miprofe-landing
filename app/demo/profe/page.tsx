@@ -32,13 +32,36 @@ export default function ProfePage() {
   const [typing, setTyping] = useState(false)
   const [input, setInput] = useState("")
   const scrollRef = useRef<HTMLDivElement>(null)
+  const userActed = useRef(false)
+  const pinged = useRef(false)
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
   }, [msgs, typing])
 
+  // El Profe es proactivo: si te quedas inactivo, él te busca (trigger de retorno).
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (userActed.current || pinged.current) return
+      pinged.current = true
+      setTyping(true)
+      setTimeout(() => {
+        setTyping(false)
+        setMsgs((m) => [
+          ...m,
+          {
+            from: "profe",
+            text: "¿Sigues por ahí? 👀 No te duermas, que México-Argentina arranca en 2h y el doble (empate o México) sigue pagando bien. ¿Te aparto 200 fichas para esa?",
+          },
+        ])
+      }, 1100)
+    }, 8000)
+    return () => clearTimeout(t)
+  }, [])
+
   function ask(text: string) {
     if (!text.trim()) return
+    userActed.current = true
     setMsgs((m) => [...m, { from: "user", text }])
     setInput("")
     setTyping(true)

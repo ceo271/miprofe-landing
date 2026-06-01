@@ -1,7 +1,7 @@
 "use client"
 
-import { ReactNode } from "react"
-import { usePathname } from "next/navigation"
+import { ReactNode, useEffect, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { DemoProvider, useDemo } from "./DemoContext"
 
@@ -76,12 +76,50 @@ function BottomNav() {
   )
 }
 
+function PushBanner() {
+  const router = useRouter()
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setShow(true), 5000) // simula un push de día de partido
+    return () => clearTimeout(t)
+  }, [])
+  useEffect(() => {
+    if (!show) return
+    const t = setTimeout(() => setShow(false), 9000) // se va solo
+    return () => clearTimeout(t)
+  }, [show])
+  if (!show) return null
+  return (
+    <div className="absolute top-2 inset-x-2 z-50 anim-down">
+      <button
+        onClick={() => {
+          setShow(false)
+          router.push("/demo")
+        }}
+        className="w-full text-left bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-3 shadow-2xl flex items-start gap-3"
+      >
+        <img src="/profe-icon.png" alt="" className="w-9 h-9 rounded-xl flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-bold">El Profe</span>
+            <span className="text-[10px] text-white/40">ahora</span>
+          </div>
+          <p className="text-xs text-white/80 leading-snug mt-0.5">
+            🇲🇽 México juega en 2h. Mi pick ya está listo: <b>empate o México (72%)</b>. ¿Le entras?
+          </p>
+        </div>
+      </button>
+    </div>
+  )
+}
+
 export default function DemoLayout({ children }: { children: ReactNode }) {
   return (
     <DemoProvider>
       <div className="min-h-screen flex justify-center bg-gradient-to-b from-profe-green/[0.03] to-transparent">
         <div className="w-full max-w-[420px] min-h-screen flex flex-col bg-profe-black border-x border-white/5 relative">
           <Header />
+          <PushBanner />
           <main className="flex-1 overflow-y-auto no-scrollbar">{children}</main>
           <BottomNav />
         </div>

@@ -27,6 +27,11 @@ body { background: #0a0a0a; color: white; }
   50% { opacity: 0.35; }
 }
 @keyframes barGrow { from { width: 0; } }
+@keyframes slideDown {
+  from { transform: translateY(-130%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.anim-down { animation: slideDown 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
 .anim-chip { animation: chipPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .anim-slide { animation: slideUp 0.35s ease-out both; }
 .anim-msg { animation: msgIn 0.3s ease-out both; }
