@@ -36,7 +36,7 @@ export default function VivoPage() {
     <div className="flex flex-col h-full relative">
       <LiveHeader score={score} />
       <LiveMiniBoard />
-      <MicroBetTicker />
+      <MicroBetTicker goalSignal={goalSignal} banner={banner} />
       <CommentaryAndChat goalSignal={goalSignal} banner={banner} />
       {banner && <GoalBanner info={banner} />}
     </div>
@@ -141,53 +141,77 @@ function LiveMiniBoard() {
   )
 }
 
-function MicroBetTicker() {
+function MicroBetTicker({ goalSignal, banner }: { goalSignal: number; banner: GoalInfo | null }) {
   const { placeBet, addChips } = useDemo()
   const [idx, setIdx] = useState(0)
   const [count, setCount] = useState(MICRO_BETS[0].window)
   const [chosen, setChosen] = useState<string | null>(null)
+  const [pendingGoal, setPendingGoal] = useState(false)
+  const [result, setResult] = useState<{ won: boolean; text: string } | null>(null)
 
+  const bet = MICRO_BETS[idx]
+  const isGoalQ = bet.id === "mb1" // "¿Quién marca el próximo gol?"
+
+  function advance() {
+    const next = (idx + 1) % MICRO_BETS.length
+    setIdx(next)
+    setCount(MICRO_BETS[next].window)
+    setChosen(null)
+    setPendingGoal(false)
+    setResult(null)
+  }
+
+  function resolve(won: boolean, text: string) {
+    addChips(won ? 180 : 0, won ? "¡Apuesta-relámpago ganada!" : "Esta no entró. ¡Va la próxima!")
+    setResult({ won, text })
+    setPendingGoal(false)
+    setTimeout(advance, 2800)
+  }
+
+  // Cuenta regresiva de la ronda
   useEffect(() => {
-    if (chosen) return
+    if (chosen || result) return
     if (count <= 0) {
-      // siguiente ronda
-      const next = (idx + 1) % MICRO_BETS.length
-      setIdx(next)
-      setCount(MICRO_BETS[next].window)
-      setChosen(null)
+      advance()
       return
     }
     const t = setTimeout(() => setCount((c) => c - 1), 1000)
     return () => clearTimeout(t)
-  }, [count, chosen, idx])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, chosen, result, idx])
 
-  const bet = MICRO_BETS[idx]
+  // El "próximo gol" se resuelve con el gol REAL del partido
+  useEffect(() => {
+    if (!pendingGoal || !banner || !chosen) return
+    const won = chosen === banner.team
+    resolve(won, won ? `¡${banner.team} marcó! Ganaste +180 fichas 🎉` : `Marcó ${banner.team}. Esta no era.`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalSignal])
 
   function choose(opt: string) {
     setChosen(opt)
     placeBet({ matchId: "bra-esp-live", label: `${bet.q} → ${opt}`, stake: 100, side: "profe" })
-    setTimeout(() => {
-      const won = Math.random() < 0.5
-      if (won) addChips(180, "¡Apuesta-relámpago ganada!")
-      else addChips(0, "Esta no entró. ¡Va la próxima!")
-      // nueva ronda
-      const next = (idx + 1) % MICRO_BETS.length
-      setIdx(next)
-      setCount(MICRO_BETS[next].window)
-      setChosen(null)
-    }, 2200)
+    if (isGoalQ) {
+      setPendingGoal(true) // espera el próximo gol real del partido
+    } else {
+      setTimeout(() => resolve(Math.random() < 0.5, Math.random() < 0.5 ? "¡Entró! +180 fichas" : "No entró esta vez"), 2200)
+    }
   }
 
   return (
     <div className="bg-profe-copper/10 border-b border-profe-copper/25 px-4 py-3">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-bold text-profe-copper">⚡ Apuesta-relámpago</span>
-        {!chosen && (
-          <span className="text-xs font-bold tabular-nums text-white/60">{count}s</span>
-        )}
+        {!chosen && <span className="text-xs font-bold tabular-nums text-white/60">{count}s</span>}
       </div>
       <p className="text-sm font-semibold mb-2">{bet.q}</p>
-      {chosen ? (
+      {result ? (
+        <p className={`text-xs font-bold py-2 ${result.won ? "text-profe-green" : "text-white/60"}`}>{result.text}</p>
+      ) : chosen && pendingGoal ? (
+        <p className="text-xs text-profe-gold font-semibold py-2 anim-live">
+          Apostaste a &quot;{chosen}&quot;. Esperando el próximo gol… ⏳
+        </p>
+      ) : chosen ? (
         <p className="text-xs text-profe-green font-semibold py-2">Pusiste 100 fichas a &quot;{chosen}&quot;. ¡Suerte! 🤞</p>
       ) : (
         <div className="flex gap-2">
