@@ -7,7 +7,8 @@ export default function Page() {
         <Step n="1" title="Regístrate gratis" body="Te damos 1,000 fichas virtuales para que empieces. Las fichas no tienen valor monetario." />
         <Step n="2" title="Revisa los análisis del Profe" body="Cada día, El Profe publica los partidos donde ve valor." />
         <Step n="3" title="Pon tus fichas" body="Si coincides con El Profe, pones fichas. Si piensas diferente, también. Tu decisión." />
-        <Step n="4" title="Escala en la clasificación" body="Gana partidos, invita a cuates, sube en el ranking global." />
+        <Step n="4" title="Vuelve cada día y arma tu racha" body="Entra a diario para ver los análisis del Profe. Tu racha suma bonos de fichas en los días 7, 14 y 30." />
+        <Step n="5" title="Escala en las clasificaciones" body="Compite por más aciertos, mejor racha y el top de la semana. Invita a un cuate y los dos reciben fichas." />
       </div>
       <div className="mt-16 p-6 bg-profe-gold/10 border border-profe-gold/30 rounded-xl">
         <p className="text-profe-gold font-semibold mb-2">Importante</p>
